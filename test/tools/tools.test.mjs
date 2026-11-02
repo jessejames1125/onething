@@ -61,7 +61,7 @@ describe("the MCP server, through the official client", () => {
     assert.match(now.content[0].text, /Water the plants/);
     await client.callTool({ name: "add_task", arguments: { text: "Renew the library card" } });
     assert.deepEqual(calls[0], { method: "GET", url: "/api/now", auth: "Bearer tok", body: null });
-    assert.deepEqual(calls[1], { method: "POST", url: "/api/capture", auth: "Bearer tok", body: { text: "Renew the library card", via: "mcp" } });
+    assert.deepEqual(calls[1], { method: "POST", url: "/api/capture", auth: "Bearer tok", body: { text: "Renew the library card" } });
     await client.close();
   });
 
@@ -108,6 +108,19 @@ describe("the runner", () => {
     calls = [];
     await assert.rejects(run(process.execPath, [helper, "claim", "../../now"], { env: env() }));
     await assert.rejects(run(process.execPath, [helper, "result", "7", "{not json"], { env: env() }));
+    assert.deepEqual(calls, []);
+  });
+
+  it("a locked helper touches its one task: no other id, and no listing the queue", async () => {
+    calls = [];
+    const lockedEnv = { ...env(), ONETHING_TASK: "7" };
+    await run(process.execPath, [helper, "claim", "7"], { env: lockedEnv });
+    assert.equal(calls.length, 1);
+    calls = [];
+    await assert.rejects(run(process.execPath, [helper, "claim", "8"], { env: lockedEnv }));
+    await assert.rejects(run(process.execPath, [helper, "result", "8", '{"top3":[]}'], { env: lockedEnv }));
+    await assert.rejects(run(process.execPath, [helper, "fail", "8", "x"], { env: lockedEnv }));
+    await assert.rejects(run(process.execPath, [helper, "list"], { env: lockedEnv }));
     assert.deepEqual(calls, []);
   });
 

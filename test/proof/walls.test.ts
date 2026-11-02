@@ -68,9 +68,19 @@ describe("proof: each token reaches only its own routes", () => {
     expect((await api("/api/health-check", {}, "none")).status).toBe(200);
   });
 
+  it("whatever a token holder claims, its text is a tool's", async () => {
+    const llm = fakeLLM();
+    const ctx = await makeTestCtx();
+    await api("/api/capture", { body: { text: "gotta send it ASAP and need to pay", via: "web" } }, "bearer");
+    const row = await ctx.db.one<{ urgent: number; source: string }>("SELECT t.urgent, c.source FROM tasks t JOIN captures c ON c.id = t.source_capture_id");
+    expect(row).toEqual({ urgent: 0, source: "mcp" });
+    expect(llm.calls).toEqual([]);
+    expect(await ctx.db.one("SELECT id FROM agent_tasks")).toBeNull();
+  });
+
   it("text the MCP server adds is marked as a tool's, and a tool cannot make itself urgent", async () => {
     const ctx = await makeTestCtx();
-    await api("/api/capture", { body: { text: "send it ASAP immediately", via: "mcp" } }, "bearer");
+    await api("/api/capture", { body: { text: "send it ASAP immediately" } }, "bearer");
     const row = await ctx.db.one<{ urgent: number; source: string }>("SELECT t.urgent, c.source FROM tasks t JOIN captures c ON c.id = t.source_capture_id");
     expect(row).toEqual({ urgent: 0, source: "mcp" });
     const tasks = (await (await api("/api/tasks", {}, "bearer")).json()) as { items: Array<{ title: string }> };

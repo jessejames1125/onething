@@ -8,8 +8,8 @@ import type { CaptureSource, Ctx } from "./types";
 export const DATA_OPEN = "<<<UNTRUSTED_DATA";
 export const DATA_CLOSE = "<<<END_UNTRUSTED_DATA>>>";
 
-/** Capture sources whose text the owner typed: the app and their own API token. */
-export const TRUSTED_SOURCES: ReadonlySet<string> = new Set(["web", "token"]);
+/** Capture sources whose text the owner typed: a signed-in session, nothing else. */
+export const TRUSTED_SOURCES: ReadonlySet<string> = new Set(["web"]);
 
 /** Sources whose to-do waits for a tap before it is even on the list. No model reads this text before the tap. */
 export const HELD_SOURCES: ReadonlySet<CaptureSource> = new Set(["email"]);

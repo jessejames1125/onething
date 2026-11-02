@@ -62,7 +62,7 @@ CREATE TABLE goals (
 CREATE TABLE captures (
   id INTEGER PRIMARY KEY,
   raw_text TEXT,
-  source TEXT NOT NULL CHECK (source IN ('web', 'token', 'mcp', 'email', 'system')),
+  source TEXT NOT NULL CHECK (source IN ('web', 'mcp', 'email', 'system')),
   source_ref TEXT,
   parent_id INTEGER REFERENCES captures (id),
   filed_kind TEXT,

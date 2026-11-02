@@ -106,7 +106,7 @@ export interface LLM {
 
 // ------------------------------------------------------------------ captures
 
-export type CaptureSource = "web" | "token" | "mcp" | "email" | "system";
+export type CaptureSource = "web" | "mcp" | "email" | "system";
 
 export interface CaptureRow {
   id: number;

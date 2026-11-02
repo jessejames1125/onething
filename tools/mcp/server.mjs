@@ -32,7 +32,7 @@ const TOOLS = [
     inputSchema: { type: "object", properties: { text: { type: "string", description: "The to-do, in plain words." } }, required: ["text"], additionalProperties: false },
     run: (args) => {
       if (typeof args?.text !== "string" || !args.text.trim()) throw new Error("text is required");
-      return call("POST", "/api/capture", { text: args.text.slice(0, 2000), via: "mcp" });
+      return call("POST", "/api/capture", { text: args.text.slice(0, 2000) });
     },
   },
 ];

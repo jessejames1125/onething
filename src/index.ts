@@ -5,9 +5,9 @@ import { Hono, type MiddlewareHandler } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { securityHeaders } from "./core/securityHeaders";
 import runnerInstructions from "../tools/runner/RUNNER.md";
-import type { AppEnv, CaptureSource, Env } from "./core/types";
+import type { AppEnv, Env } from "./core/types";
 import { makeCtx } from "./core/ctx";
-import { authKind, login, LOGIN_RETRY_AFTER_S, logout, logoutEverywhere, requireAuth, requireSession } from "./core/auth";
+import { authKind, csrfRefusal, login, LOGIN_RETRY_AFTER_S, logout, logoutEverywhere, requireAuth, requireSession } from "./core/auth";
 import { getModules } from "./modules/registry";
 import { registerCoreJobs } from "./core/coreJobs";
 import { allJobs, INTERNAL_JOB_PATH, JOB_SIGNATURE_HEADER, lastHeartbeat, runDispatchedJob, runJobNow, scheduledTick } from "./core/jobs";
@@ -74,6 +74,8 @@ app.post("/api/login", async (c) => {
 });
 
 app.post("/api/logout", async (c) => {
+  const refused = csrfRefusal(c);
+  if (refused) return c.json({ error: refused }, 403);
   logout(c);
   return c.json({ ok: true });
 });
@@ -158,11 +160,10 @@ api.get("/me", async (c) => {
 });
 
 api.post("/capture", async (c) => {
-  const body = (await c.req.json().catch(() => ({}))) as { text?: string; via?: string };
+  const body = (await c.req.json().catch(() => ({}))) as { text?: string };
   if (typeof body.text !== "string" || !body.text.trim()) return c.json({ error: "text required" }, 400);
-  // The API token cannot claim to be the owner typing: its text is "token", or "mcp" when the MCP server says so.
-  const source: Exclude<CaptureSource, "email"> = c.get("auth") === "bearer" ? (body.via === "mcp" ? "mcp" : "token") : "web";
-  return c.json(await ingestCapture(c.get("ctx"), { text: body.text, source }));
+  // Whoever holds the API token is a tool, whatever it says: only a signed-in session counts as the owner typing.
+  return c.json(await ingestCapture(c.get("ctx"), { text: body.text, source: c.get("auth") === "bearer" ? "mcp" : "web" }));
 });
 api.get("/captures/inbox", async (c) => c.json({ items: await inbox(c.get("ctx")) }));
 
