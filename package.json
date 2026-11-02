@@ -5,7 +5,9 @@
   "description": "A phone-first planner that shows the one thing to do now. Runs free on Cloudflare, thinks with your own Claude.",
   "license": "MIT",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "demo": "node tools/demo.mjs",
     "build": "vite build --config web/vite.config.ts",
@@ -24,8 +26,8 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "@cloudflare/vitest-plugin": "1.3.7",
-    "@cloudflare/workers-types": "5.20261007.1",
+    "@cloudflare/vitest-plugin": "1.4.12",
+    "@cloudflare/workers-types": "5.20261102.1",
     "@modelcontextprotocol/sdk": "1.32.2",
     "@playwright/test": "1.64.0",
     "@types/node": "26.6.4",
@@ -34,7 +36,7 @@
     "@vitejs/plugin-react": "6.1.2",
     "typescript": "5.9.3",
     "vite": "8.3.3",
-    "vitest": "4.1.11",
-    "wrangler": "4.148.0"
+    "vitest": "4.1.12",
+    "wrangler": "4.156.1"
   }
 }
