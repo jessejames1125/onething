@@ -1,0 +1,19 @@
+{
+  // `npm run demo` only: no Cloudflare account, no AI binding, no cron. Paths are relative to this file.
+  "name": "onething-demo",
+  "main": "../src/index.ts",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "TIMEZONE": "America/New_York",
+    "USER_NAME": "Robin",
+    "DEMO": "1",
+    "DEMO_NOW": "2030-03-12T13:05:00Z",
+    "RUNNER_TOKEN": "demo-runner-token"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "onething-demo", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "../src/db" }
+  ],
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
+  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": true }
+}
