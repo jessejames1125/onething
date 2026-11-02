@@ -76,6 +76,13 @@ describe("a cross-site page cannot drive the app", () => {
     expect(await (await api("/api/capture", { body: { text: "water the plants" }, headers: { cookie: await cookie(), origin: BASE, "x-requested-with": "onething" } }, "none")).json()).toMatchObject({ items: expect.any(Array) });
   });
 
+  it("a cross-site page cannot sign you out", async () => {
+    const res = await api("/api/logout", { method: "POST", headers: { cookie: await cookie(), origin: "https://attacker.example" } }, "none");
+    expect(res.status).toBe(403);
+    expect(res.headers.get("set-cookie")).toBeNull();
+    expect((await api("/api/logout", { method: "POST", headers: { "x-requested-with": "onething" } }, "none")).status).toBe(200);
+  });
+
   it("sec-fetch-site cross-site is refused", async () => {
     const res = await api("/api/capture", { body: { text: "x" }, headers: { cookie: await cookie(), "sec-fetch-site": "cross-site", "x-requested-with": "onething" } }, "none");
     expect(res.status).toBe(403);
