@@ -60,7 +60,8 @@ async function savePins(ctx: Ctx, result: Record<string, unknown>, viaFallback: 
   // Without the runner the ranking already orders the day: pins are for Claude's answer.
   if (viaFallback) return;
   const today = ctx.localDate();
-  const open = new Set((await loadOpenTasks(ctx)).map((t) => t.id));
+  // A pick cannot be an outside to-do: an email never reaches the top of Now by way of a fooled answer.
+  const open = new Set((await loadOpenTasks(ctx)).filter((t) => t.source == null || TRUSTED_SOURCES.has(t.source)).map((t) => t.id));
   const items: MorningPins["items"] = [];
   for (const raw of (result.top3 as unknown[]) ?? []) {
     const o = obj(raw, "top3[]");

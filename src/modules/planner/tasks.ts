@@ -34,7 +34,8 @@ function wordsContained(a: Set<string>, b: Set<string>): boolean {
 }
 
 export async function findDuplicateTask(ctx: Ctx, title: string): Promise<DupeOf | null> {
-  const open = await ctx.db.all<DupeOf>("SELECT id, title FROM tasks WHERE status IN ('todo','doing') ORDER BY id DESC LIMIT 200");
+  // Only the owner's own to-dos count: outside text must never swallow a real to-do or come back as the answer.
+  const open = await ctx.db.all<DupeOf>("SELECT t.id, t.title FROM tasks t LEFT JOIN captures c ON c.id = t.source_capture_id WHERE t.status IN ('todo','doing') AND (c.source IS NULL OR c.source = 'web') ORDER BY t.id DESC LIMIT 200");
   const mine = dupeWords(title);
   return open.find((t) => wordsContained(mine, dupeWords(t.title))) ?? null;
 }
