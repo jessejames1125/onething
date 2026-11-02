@@ -38,8 +38,14 @@ function step(label, args) {
 }
 
 if (!existsSync(wrangler)) {
-  console.error("Run `npm install` first.");
-  process.exit(1);
+  process.stdout.write("Installing, first run only... ");
+  const r = spawnSync("npm ci --no-audit --no-fund", { cwd: root, env, encoding: "utf8", shell: true });
+  if (r.status !== 0) {
+    console.log("failed");
+    console.error(`${r.stdout ?? ""}${r.stderr ?? ""}`.slice(-2000));
+    process.exit(1);
+  }
+  console.log("ok");
 }
 
 step("Building the app", [vite, "build", "--config", "web/vite.config.ts", "--logLevel", "error"]);
