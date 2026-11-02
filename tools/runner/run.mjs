@@ -45,6 +45,18 @@ function runClaude(args, env, cwd, input) {
   return spawnSync("claude.cmd", quoted, { ...opts, shell: true });
 }
 
+/** A pass can run for minutes, and the connection the last list call left open may be dead by then: try once more. */
+async function listTasks(pass) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await fetch(`${url}/api/agent/tasks?pass=${pass}`, { headers: { authorization: `Bearer ${token}` } });
+    } catch {
+      // Falls through to the next try, then to null.
+    }
+  }
+  return null;
+}
+
 async function main() {
   if (!url || !token) {
     console.error("Set ONETHING_URL and ONETHING_RUNNER_TOKEN.");
@@ -53,9 +65,9 @@ async function main() {
   const standing = readFileSync(path.join(here, "RUNNER.md"), "utf8");
   let code = 0;
   for (const pass of ["noweb", "web"]) {
-    const res = await fetch(`${url}/api/agent/tasks?pass=${pass}`, { headers: { authorization: `Bearer ${token}` } });
-    if (!res.ok) {
-      console.error(`[${pass}] the app answered ${res.status}`);
+    const res = await listTasks(pass);
+    if (!res?.ok) {
+      console.error(`[${pass}] ${res ? `the app answered ${res.status}` : "could not reach the app"}`);
       code = 1;
       continue;
     }

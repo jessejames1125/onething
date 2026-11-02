@@ -1,5 +1,5 @@
 /**
- * The proof behind "outside text is data". `npm run proof` runs this file and prints the table in the README.
+ * The proof behind "outside text is data". `npm run proof` runs this file; its test names are the table in the README.
  *
  * Part 1 measures the wrapper against hostile strings built to escape it, next to the two obvious ways to write it. A
  * string "breaks out" when, after wrapping, a real closing marker appears before the wrapper's own, because a reader would
@@ -41,17 +41,10 @@ export function corpus(): string[] {
 }
 
 describe("proof: the data block", () => {
-  it("no hostile string breaks out of dataBlock; the two obvious wrappers both leak", () => {
+  it("200 hostile strings: 0 break out of dataBlock, 200 out of a plain wrap, 20 out of a one-pass strip", () => {
     const strings = corpus();
     const count = (wrap: (s: string) => string) => strings.filter((s) => escapes(wrap(s))).length;
-    const plain = count(naiveWrap);
-    const once = count(stripOnce);
-    const ours = count((s) => dataBlock(s, "email"));
-    console.log(`[proof] ${strings.length} hostile strings. Breakouts: plain wrap ${plain}, strip once ${once}, dataBlock ${ours}.`);
-    expect(strings.length).toBe(200);
-    expect(plain).toBe(200);
-    expect(once).toBeGreaterThan(0);
-    expect(ours).toBe(0);
+    expect({ total: strings.length, plain: count(naiveWrap), stripOnce: count(stripOnce), dataBlock: count((s) => dataBlock(s, "email")) }).toEqual({ total: 200, plain: 200, stripOnce: 20, dataBlock: 0 });
   });
 
   it("stays fast on a hostile megabyte, where stripping until nothing changes would crawl", () => {
