@@ -53,11 +53,7 @@ The app works with no model at all, on word rules. To add one:
 - **Filing (in the Worker):** free Workers AI on your Cloudflare account, or your own Anthropic API key as a Worker secret.
 - **The runner (on your machine):** `npm run runner` drives the official [`claude`](https://code.claude.com/docs/en/overview) tool through the queue, one pass, then exits.
 
-The runner uses your API key if `ANTHROPIC_API_KEY` is set, with `--bare`, and Anthropic bills you. Use a key for anything unattended. Anthropic's [developer guidance](https://code.claude.com/docs/en/legal-and-compliance) says developers building products should use API keys.
-
-Without a key, `claude` uses however you signed in. Anthropic's page says its rules do not prevent "an end user from signing in to the unmodified Claude Code binary with their own Claude subscription". Its [consumer terms](https://www.anthropic.com/legal/consumer-terms) also limit access "through automated or non-human means" outside an API key. I found no page that rules on a scheduled job on your own machine, so this repo ships no scheduler. Running it by hand is the plain case. Scheduling it on a subscription is your call to read and make.
-
-This app never reads, stores or passes along a Claude login or session token. This is my reading, not legal advice.
+The runner uses your own Claude plan, however `claude` is signed in. If `ANTHROPIC_API_KEY` is set, it uses that key instead and Anthropic bills the key. This app never reads, stores or passes along a Claude login.
 
 ## Why not
 
