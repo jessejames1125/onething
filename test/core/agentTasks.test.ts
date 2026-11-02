@@ -21,9 +21,10 @@ describe("queue, claim, result", () => {
   it("refuses a result that does not match the kind's shape, and keeps the task", async () => {
     const ctx = await makeTestCtx();
     const id = await requestTask(ctx, "morning_plan", { tasks: [] });
+    await api(`/api/agent/tasks/${id}/claim?pass=noweb`, { method: "POST", headers: RUNNER }, "none");
     const post = await api(`/api/agent/tasks/${id}/result`, { body: { result: { note: "no top3" } }, headers: RUNNER }, "none");
     expect(post.status).toBe(422);
-    expect((await ctx.db.one<{ status: string }>("SELECT status FROM agent_tasks WHERE id = ?", id))?.status).toBe("queued");
+    expect((await ctx.db.one<{ status: string }>("SELECT status FROM agent_tasks WHERE id = ?", id))?.status).toBe("claimed");
   });
 
   it("checks each kind's shape", () => {
@@ -37,10 +38,10 @@ describe("queue, claim, result", () => {
   it("a failed try goes back to the queue while attempts and time remain", async () => {
     const ctx = await makeTestCtx({ now: T0 });
     const id = await requestTask(ctx, "morning_plan", { tasks: [] }, { dueAt: new Date(T0.getTime() + 3600_000) });
-    await ctx.db.run("UPDATE agent_tasks SET attempts = 1 WHERE id = ?", id);
+    await ctx.db.run("UPDATE agent_tasks SET status = 'claimed', attempts = 1 WHERE id = ?", id);
     const again = await failTask(ctx, id, "tool crashed");
     expect(again).toMatchObject({ ok: true, task: { status: "queued" } });
-    await ctx.db.run("UPDATE agent_tasks SET attempts = 3 WHERE id = ?", id);
+    await ctx.db.run("UPDATE agent_tasks SET status = 'claimed', attempts = 3 WHERE id = ?", id);
     const done = await failTask(ctx, id, "tool crashed");
     expect(done).toMatchObject({ ok: true, task: { status: "failed" } });
   });
@@ -48,6 +49,7 @@ describe("queue, claim, result", () => {
   it("a review result after its deadline changes nothing", async () => {
     const ctx = await makeTestCtx();
     const id = await requestTask(ctx, "capture_review", { items: [] }, { dueAt: new Date(Date.now() - 1000) });
+    await api(`/api/agent/tasks/${id}/claim?pass=noweb`, { method: "POST", headers: RUNNER }, "none");
     const post = await api(`/api/agent/tasks/${id}/result`, { body: { result: { actions: [] } }, headers: RUNNER }, "none");
     expect(post.status).toBe(409);
     expect((await ctx.db.one<{ status: string }>("SELECT status FROM agent_tasks WHERE id = ?", id))?.status).toBe("failed");

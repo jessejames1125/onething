@@ -315,11 +315,13 @@ export async function claimTask(ctx: Ctx, id: number, opts: { web?: boolean } = 
   return { ok: true, task: (await getTask(ctx, id))! };
 }
 
+/** Only a claimed task takes an answer or a failure. A dropped email is "failed": a failure must not put it back in the queue. */
+const notClaimed = (task: AgentTask): string => (task.status === "held" ? "task is waiting for the owner's OK" : `task is ${task.status}, not claimed`);
+
 export async function completeTask(ctx: Ctx, id: number, rawResult: unknown, modules: ModuleDef[] = getModules()): Promise<{ ok: true; task: AgentTask; handled: boolean } | { ok: false; status: number; error: string }> {
   const task = await getTask(ctx, id);
   if (!task) return { ok: false, status: 404, error: "no such task" };
-  if (task.status === "done" || task.status === "fallback") return { ok: false, status: 409, error: `task already resolved (${task.status})` };
-  if (task.status === "held") return { ok: false, status: 409, error: "task is waiting for the owner's OK" };
+  if (task.status !== "claimed") return { ok: false, status: 409, error: notClaimed(task) };
   // No fallback ran, but the moment has passed: what was filed stands.
   if (hasNoFallback(task.kind) && task.due_at && Date.parse(task.due_at) < ctx.now().getTime()) {
     await ctx.db.update("agent_tasks", id, { status: "failed", error: "deadline passed; nothing applied", done_at: ctx.now().toISOString() });
@@ -343,9 +345,8 @@ export async function completeTask(ctx: Ctx, id: number, rawResult: unknown, mod
 export async function failTask(ctx: Ctx, id: number, error: string): Promise<{ ok: true; task: AgentTask } | { ok: false; status: number; error: string }> {
   const task = await getTask(ctx, id);
   if (!task) return { ok: false, status: 404, error: "no such task" };
-  if (task.status === "done" || task.status === "fallback") return { ok: false, status: 409, error: `task already resolved (${task.status})` };
-  if (task.status === "held") return { ok: false, status: 409, error: "task is waiting for the owner's OK" };
-  const maxAttempts = await ctx.settings.getNumber("agent.max_attempts", 3);
+  if (task.status !== "claimed") return { ok: false, status: 409, error: notClaimed(task) };
+  const maxAttempts =await ctx.settings.getNumber("agent.max_attempts", 3);
   // Retry while attempts remain and the deadline has not passed; otherwise it stays failed and resolve() falls back.
   const due = task.due_at ? Date.parse(task.due_at) : Infinity;
   const retry = task.attempts < maxAttempts && due > ctx.now().getTime();
