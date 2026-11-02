@@ -4,8 +4,8 @@
 // "Which Claude" in the README first.
 //
 // Locked down: each pass starts in an empty folder outside the repo, has no Read tool, and its only command is the helper,
-// which talks to ONETHING_URL under /api/agent/ and nowhere else. Two passes: the no-web pass (your own data) has no web
-// tools at all; the web pass gets web tools and only the research kind. The server enforces the split too.
+// which talks to ONETHING_URL under /api/agent/ and nowhere else, about one task only. Two passes: the no-web pass (your own
+// data) has no web tools at all; the web pass gets web tools and only the research kind. The server enforces the split too.
 import { spawnSync } from "node:child_process";
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
@@ -76,27 +76,30 @@ async function main() {
       console.log(`[${pass}] nothing queued`);
       continue;
     }
-    const root = mkdtempSync(path.join(os.tmpdir(), "onething-runner-"));
-    if (/\s/.test(root)) {
-      console.error(`The temp folder path has a space in it (${root}), and the helper's allow rule needs a path without spaces. Set TMPDIR to one without.`);
-      process.exit(2);
-    }
-    const bin = path.join(root, "bin");
-    const work = path.join(root, "work");
-    mkdirSync(bin);
-    mkdirSync(work);
-    copyFileSync(path.join(here, "api.mjs"), path.join(bin, "api.mjs"));
-    const helper = path.join(bin, "api.mjs").replace(/\\/g, "/");
-    const env = { ...process.env, ONETHING_URL: url, ONETHING_RUNNER_TOKEN: token, ONETHING_PASS: pass };
-    const prompt = `${pass === "web" ? "Web pass: web tools are for research_brief tasks." : "No-web pass: you have no web tools."}\nThe helper command in this run is: node ${helper}\nUse it exactly, with no quotes around the path, nothing before it, and no pipes or redirects. It adds the token and the host itself.\n\n${standing}`;
     console.log(`[${pass}] ${items.length} queued`);
-    const out = runClaude(claudeArgs(pass, helper, !!process.env.ANTHROPIC_API_KEY), env, work, prompt);
-    rmSync(root, { recursive: true, force: true });
-    if (out.error) {
-      console.error(`Could not start claude: ${out.error.message}`);
-      code = 1;
-    } else if (out.status !== 0) {
-      code = out.status ?? 1;
+    // One process per task, its helper locked to that task's id: text in one bundle cannot reach another task.
+    for (const task of items) {
+      const root = mkdtempSync(path.join(os.tmpdir(), "onething-runner-"));
+      if (/\s/.test(root)) {
+        console.error(`The temp folder path has a space in it (${root}), and the helper's allow rule needs a path without spaces. Set TMPDIR to one without.`);
+        process.exit(2);
+      }
+      const bin = path.join(root, "bin");
+      const work = path.join(root, "work");
+      mkdirSync(bin);
+      mkdirSync(work);
+      copyFileSync(path.join(here, "api.mjs"), path.join(bin, "api.mjs"));
+      const helper = path.join(bin, "api.mjs").replace(/\\/g, "/");
+      const env = { ...process.env, ONETHING_URL: url, ONETHING_RUNNER_TOKEN: token, ONETHING_PASS: pass, ONETHING_TASK: String(task.id) };
+      const prompt = `${pass === "web" ? "Web pass: web tools are for research_brief tasks." : "No-web pass: you have no web tools."}\nYour one task in this run is id ${task.id}, kind ${task.kind}.\nThe helper command in this run is: node ${helper}\nUse it exactly, with no quotes around the path, nothing before it, and no pipes or redirects. It adds the token and the host itself.\n\n${standing}`;
+      const out = runClaude(claudeArgs(pass, helper, !!process.env.ANTHROPIC_API_KEY), env, work, prompt);
+      rmSync(root, { recursive: true, force: true });
+      if (out.error) {
+        console.error(`Could not start claude: ${out.error.message}`);
+        code = 1;
+      } else if (out.status !== 0) {
+        code = out.status ?? 1;
+      }
     }
   }
   process.exit(code);

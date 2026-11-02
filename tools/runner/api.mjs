@@ -26,9 +26,15 @@ async function call(method, path, body) {
 }
 
 const [cmd, id, arg] = process.argv.slice(2);
+// run.mjs sets ONETHING_TASK: this session can touch that one task and no other, and cannot list the queue.
+const locked = process.env.ONETHING_TASK ?? "";
 const needId = () => {
   if (!/^\d+$/.test(id ?? "")) {
     console.error("A task id is required.");
+    process.exit(2);
+  }
+  if (locked && id !== locked) {
+    console.error(`This run can touch task ${locked} only.`);
     process.exit(2);
   }
 };
@@ -36,6 +42,10 @@ const needId = () => {
 if (cmd === "instructions") {
   console.log(await call("GET", "/instructions"));
 } else if (cmd === "list") {
+  if (locked) {
+    console.error(`This run has one task: ${locked}.`);
+    process.exit(2);
+  }
   console.log(await call("GET", `/tasks?pass=${pass}`));
 } else if (cmd === "claim") {
   needId();
