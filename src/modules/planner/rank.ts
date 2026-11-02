@@ -125,7 +125,7 @@ export function rankTasks(tasks: TaskRow[], goals: GoalRow[], rc: RankContext): 
     const fit = energy === "high" ? (rc.morning ? 1 : 0.5) : energy === "low" ? 0.7 : 0.8;
     const isUrgent = urgentReal({ ...t, due, outside }, rc.today);
     const mine = t.triage_by === "you" || (!outside && saysUrgent(t));
-    const urgentWhy = !isUrgent ? null : t.urgent_why ?? (mine ? "You said so" : null);
+    const urgentWhy = !isUrgent ? null : t.urgent_why ?? (mine ? "you said so" : null);
     out.push({
       id: t.id,
       title: t.title,

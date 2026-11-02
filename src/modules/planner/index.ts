@@ -107,7 +107,7 @@ const planner: ModuleDef = {
       const body = (await c.req.json().catch(() => ({}))) as { urgent?: boolean };
       const urgent = body.urgent === true;
       const id = Number(c.req.param("id"));
-      await ctx.db.run("UPDATE tasks SET urgent = ?, urgent_why = ?, triage_by = 'you', updated_at = ? WHERE id = ? AND status IN ('todo','doing')", urgent ? 1 : 0, urgent ? "You said so" : null, ctx.now().toISOString(), id);
+      await ctx.db.run("UPDATE tasks SET urgent = ?, urgent_why = ?, triage_by = 'you', updated_at = ? WHERE id = ? AND status IN ('todo','doing')", urgent ? 1 : 0, urgent ? "you said so" : null, ctx.now().toISOString(), id);
       return c.json({ ok: true });
     });
     app.post("/tasks/:id/goal", async (c) => {

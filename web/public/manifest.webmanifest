@@ -1,7 +1,7 @@
 {
   "name": "onething",
   "short_name": "onething",
-  "description": "A phone-first planner that shows the one thing to do now.",
+  "description": "A phone-first planner that shows the one thing to do now. Runs free on Cloudflare, thinks with your own Claude.",
   "start_url": "/#/",
   "scope": "/",
   "display": "standalone",

@@ -101,7 +101,7 @@ function System({ me }: { me: Me }) {
       </div>
       <div className="line-row">
         <span>Runner</span>
-        <span className="muted small">{agent.data?.runnerConfigured ? `last result ${agent.data.lastRunnerResult?.done_at ?? "none yet"}` : "not set up"}</span>
+        <span className="muted small">{agent.data?.runnerConfigured ? `last result ${agent.data.lastRunnerResult?.done_at?.slice(0, 16).replace("T", " ") ?? "none yet"}` : "not set up"}</span>
       </div>
       {(jobs.data?.items ?? []).map((j) => (
         <div key={j.id} className="line-row">

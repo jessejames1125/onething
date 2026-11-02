@@ -19,7 +19,8 @@ interface Detail {
   actions: ActionButton[];
 }
 
-const idFromHash = () => Number(location.hash.replace(/^#\/?/, "").split("/")[1]);
+const dayLabel = (date: string) => new Date(`${date.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+const idFromHash =() => Number(location.hash.replace(/^#\/?/, "").split("/")[1]);
 
 export default function Item({ me }: { me: Me }) {
   const [id, setId] = useState(idFromHash);
@@ -49,9 +50,9 @@ export default function Item({ me }: { me: Me }) {
         <h1 className={data.title.length > 70 ? "item-title is-long" : "item-title"}>{data.title}</h1>
         <p className="item-line">{data.why}</p>
         {data.outside && <p className="item-line">This text came from outside the app ({data.outside}).</p>}
-        {data.due && <p className="item-line">Due {data.due}</p>}
+        {data.due && <p className="item-line">Due {dayLabel(data.due)}</p>}
         {data.leftOff && <p className="item-about">Left off: {data.leftOff}</p>}
-        {data.notes && <p className="item-about item-notes">{data.notes}</p>}
+        {data.notes && data.notes.trim().toLowerCase() !== data.title.trim().toLowerCase() && <p className="item-about item-notes">{data.notes}</p>}
         {data.status !== "open" && <p className="item-status muted">{data.status === "done" ? "Done." : data.status === "held" ? "Waiting for your OK on Now." : "Set aside."}</p>}
         {msg && (
           <p className="now-msg" role="status">

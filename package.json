@@ -2,7 +2,7 @@
   "name": "onething",
   "version": "0.1.0",
   "private": true,
-  "description": "A phone-first planner that shows the one thing to do now. Runs free on Cloudflare and thinks with your own Claude.",
+  "description": "A phone-first planner that shows the one thing to do now. Runs free on Cloudflare, thinks with your own Claude.",
   "license": "MIT",
   "type": "module",
   "engines": { "node": ">=20" },

@@ -169,7 +169,8 @@ function firstBlock(v: unknown): string | null {
 function releaseSummary(kind: string, input: Record<string, unknown>): string {
   const block = firstBlock(input) ?? "";
   const from = /from=([a-z_-]+)/i.exec(block)?.[1] ?? "outside";
-  const text = block.split("\n").slice(1, -1).join(" ").replace(/\s+/g, " ").trim().slice(0, 140);
+  const whole = block.split("\n").slice(1, -1).join(" ").replace(/\s+/g, " ").trim();
+  const text = whole.length > 200 ? `${whole.slice(0, 200).replace(/\s+\S*$/, "")}...` : whole;
   const what = isWebKind(kind) ? "look this up on the web" : "read this";
   return `Let Claude ${what}? It came from ${from === "email" ? "an email" : `outside the app (${from})`}, so it waited for your OK: "${text}"`;
 }

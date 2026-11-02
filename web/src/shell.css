@@ -5,7 +5,7 @@
 .nav.tabs a { flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 4px; font-size: 14px; }
 
 /* Waiting for a tap: text from outside the app, shown as a quote, with the only two things that can happen to it. */
-.held { margin: 0 var(--sp-1); padding: var(--sp-4); border: 1px solid var(--border-strong); border-left: 3px solid var(--warn); border-radius: var(--radius); background: var(--surface); }
+.held { margin: 0 var(--sp-1); padding: var(--sp-4); border: 1px solid var(--warn); border-radius: var(--radius); background: var(--surface); }
 .held-h { margin: 0 0 var(--sp-2); font-family: var(--font-round); font-size: var(--fs-small); font-weight: 600; color: var(--text-muted); }
 .held-q { margin: 0 0 var(--sp-3); font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
 .held-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
@@ -143,6 +143,7 @@
 .item-back { display: inline-flex; align-items: center; gap: 4px; min-height: var(--hit); margin: 0 0 var(--sp-1); padding: 0 12px 0 0; font-size: var(--fs-body); font-weight: 600; }
 
 .todo-list li.todo-row { align-items: center; padding: var(--sp-2) 0; }
+.todo-list .todo-text a.primary { display: flex; flex-wrap: wrap; align-items: center; min-height: 44px; }
 .todo-text { min-width: 0; flex: 1 1 auto; }
 .todo-text .primary { display: block; color: var(--text); padding: 6px 0; }
 .todo-text .primary:hover { text-decoration: none; }

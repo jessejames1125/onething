@@ -44,7 +44,7 @@ describe("ranking", () => {
     );
     expect(out.map((t) => t.title).slice(0, 4)).toEqual(["Picked", "Now asap", "Late", "Due"]);
     expect(out[0].reason).toBe("Claude's pick: fits the morning");
-    expect(out[1].reason).toBe("Urgent: You said so");
+    expect(out[1].reason).toBe("Urgent: you said so");
     expect(out[2].reason).toContain("Overdue");
     expect(out[3].reason).toBe("Due today");
     expect(out.find((t) => t.title === "Goal")!.reason).toBe('Moves "Big goal" forward');

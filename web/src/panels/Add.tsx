@@ -62,22 +62,22 @@ export default function Add({ me }: { me: Me }) {
       {result && (
         <section className="add-result" aria-live="polite">
           <h2>{result.receipt}</h2>
-          {result.items.length > 1 && (
-            <ul className="now-lines">
-              {result.items.map((i) => (
-                <li key={i.captureId}>
-                  <a href={i.refId ? itemHref(i.refId) : "#/todos"}>
-                    <span className="now-line-why">{i.receipt}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
           <div className="add-actions">
             <Button primary href="#/now">
               Show me the one thing
             </Button>
           </div>
+          {result.items.length > 1 && (
+            <ul className="now-lines">
+              {result.items.map((i) => (
+                <li key={i.captureId}>
+                  <a href={i.refId ? itemHref(i.refId) : "#/todos"}>
+                    <span className="now-line-why">{i.receipt.replace(/^On your list: /, "")}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       )}
 

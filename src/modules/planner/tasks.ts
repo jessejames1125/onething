@@ -71,7 +71,7 @@ export async function addTask(ctx: Ctx, input: AddTask): Promise<{ id: number; t
     energy: inferEnergy(shape),
     is_shallow: inferShallow(shape) ? 1 : 0,
     urgent: urgent ? 1 : 0,
-    urgent_why: urgent ? "You wrote that it can't wait" : null,
+    urgent_why: urgent ? "you wrote that it can't wait" : null,
     triage_by: urgent ? "guess" : null,
     source_capture_id: input.captureId,
     created_at: now,
