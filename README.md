@@ -80,7 +80,7 @@ Rerun with `npm run proof`. No account, key or network. Test code: [`test/proof`
 
 Those numbers involve no model, on purpose: the walls must hold when a model fails.
 
-One small check with a real model, by hand, not in CI: the demo's hostile email through `npm run runner`, on `claude-haiku-5-5`, 3 runs on 2026-11-02. None of the 3 did what the email asked, and each said so in its note. One retitled its own to-do. Three runs of one email show the path works. They do not measure how often a model can be fooled.
+One small check with a real model, by hand, not in CI: the demo's hostile email through `npm run runner`, on `claude-haiku-5-5`, 4 runs on 2026-11-02, the last one with the current one-process-per-task runner. None of the 4 did what the email asked, and each said so in its note. Two retitled their own to-do. Four runs of one email show the path works. They do not measure how often a model can be fooled.
 
 Also by hand, on the same date and model: a session with the runner's exact flags tried 8 commands, including `$(...)`, `;`, a pipe, an environment override and `curl`. Only the plain helper call ran, confirmed by the helper's own log and an empty work folder. That is the `claude` tool's own permission check, so rerun it after you update `claude`.
 
