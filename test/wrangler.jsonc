@@ -1,0 +1,11 @@
+{
+  // Tests only: no AI binding, so a test run never needs a Cloudflare account or reaches the network. Paths are relative to this file.
+  "name": "onething-test",
+  "main": "../src/index.ts",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "onething-test", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "../src/db" }
+  ],
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }]
+}
