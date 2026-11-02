@@ -199,7 +199,8 @@ export function parseEmail(raw: string): ParsedEmail {
   return {
     from: header(head, "From").slice(0, 200),
     subject: header(head, "Subject").slice(0, 200),
-    body: text.replace(/<[^>]+>/g, " ").replace(/[ \t]+\n/g, "\n").trim().slice(0, EMAIL_BODY_CHARS),
+    // Cut first: the tag regex is slow on a long run of "<", and a sender picks the input.
+    body: text.slice(0, EMAIL_BODY_CHARS * 4).replace(/<[^>]+>/g, " ").replace(/[ \t]+\n/g, "\n").trim().slice(0, EMAIL_BODY_CHARS),
   };
 }
 
