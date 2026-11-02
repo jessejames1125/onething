@@ -174,7 +174,7 @@ export default function Now({ me: _me }: { me: Me }) {
 
         {data.outsideNote && (
           <p className="held-note" role="status">
-            {data.outsideNote.note ?? "Claude read the email."} {data.outsideNote.lines.join(". ")}
+            {data.outsideNote.note ? `The runner's note on this email, which may be wrong: ${data.outsideNote.note}` : "The runner read the email."} {data.outsideNote.lines.join(". ")}
           </p>
         )}
 

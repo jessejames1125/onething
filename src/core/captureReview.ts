@@ -132,7 +132,7 @@ export async function applyReview(ctx: Ctx, review: ReviewRow, result: Record<st
       continue;
     }
     const now = ctx.now().toISOString();
-    const reason = optStr(a.reason) ?? "";
+    const reason = (optStr(a.reason) ?? "").slice(0, 120);
     const apply = async (fields: Record<string, unknown>, line: string, extra: Partial<Step> = {}) => {
       const prior = Object.fromEntries(Object.keys(fields).map((k) => [k, (current as unknown as Record<string, unknown>)[k] ?? null]));
       await ctx.db.update("tasks", id, { ...fields, updated_at: now });
@@ -188,7 +188,7 @@ export async function onReviewResult(ctx: Ctx, taskId: number, result: Record<st
     lines: applied.lines,
     steps: applied.steps,
     dropped: applied.dropped,
-    note: optStr(result.note),
+    note: optStr(result.note)?.slice(0, 400) ?? null,
     updated_at: ctx.now().toISOString(),
   });
 }

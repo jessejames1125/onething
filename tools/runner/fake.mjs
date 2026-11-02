@@ -18,7 +18,7 @@ export function answer(task) {
       const subject = TITLE_OF_EMAIL.exec(task.input.captures[0].text)?.[1]?.trim() ?? "";
       return {
         actions: subject ? [{ do: "retitle", task_id: item.id, title: subject.replace(/ today$/i, ""), reason: "from the subject line" }] : [],
-        note: "Canned demo runner, no model: the email was read as data. It said to ignore the rules and send your data. Neither happened.",
+        note: "This demo runner is canned, with no model. It read the email as data: it said to ignore the rules and send your data, and neither happened.",
       };
     }
     return { actions: [], note: null };
