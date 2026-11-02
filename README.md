@@ -88,7 +88,7 @@ Also by hand, on the same date and model: a session with the runner's exact flag
 - Duplicates are caught by matching words, so a reworded repeat gets through.
 - Nested multipart email arrives as raw text. Attachments are ignored.
 - Text only. Your data sits unencrypted in your own D1.
-- The deploy guide and real inbound email have not been run end to end from this repo yet.
+- The deploy guide was run on a fresh clone on 2026-11-02 (sign-in page, API sign-in, add and read a to-do). Real inbound email has not been tested.
 
 ## How it works
 

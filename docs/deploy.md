@@ -4,9 +4,10 @@ A free Cloudflare account is enough. You need Node 20 or newer. The commands run
 
 Check the current free limits on [Workers](https://developers.cloudflare.com/workers/platform/pricing/), [D1](https://developers.cloudflare.com/d1/platform/pricing/) and [Workers AI](https://developers.cloudflare.com/workers-ai/platform/pricing/) before you rely on them.
 
-1. Sign in to Cloudflare from this folder.
+1. Install, then sign in to Cloudflare from this folder.
 
    ```sh
+   npm install
    npx wrangler login
    ```
 
@@ -56,10 +57,10 @@ Without this the app never sees email. In the Cloudflare dashboard, go to your d
 On your own machine, with the [official `claude` tool](https://code.claude.com/docs/en/overview) installed:
 
 ```sh
-ONETHING_URL=https://your-worker.workers.dev ONETHING_RUNNER_TOKEN=... ANTHROPIC_API_KEY=... npm run runner
+ONETHING_URL=https://your-worker.workers.dev ONETHING_RUNNER_TOKEN=... npm run runner
 ```
 
-It runs one pass over the queue and exits. Read "Which Claude" in the README before you schedule it. On Windows PowerShell, set the three values with `$env:NAME = "value"` first.
+It runs one pass over the queue on your own Claude plan and exits; schedule it however you like. Add `ANTHROPIC_API_KEY=...` to bill an API key instead. On Windows PowerShell, set the values with `$env:NAME = "value"` first.
 
 ## Claude Code
 
