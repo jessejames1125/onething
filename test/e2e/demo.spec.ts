@@ -63,7 +63,7 @@ test("a brain dump files into to-dos, and a hostile email waits for a tap and is
 
   // The tap sends it to the runner as data. The card does not move, and nothing was sent anywhere.
   await held.getByRole("button", { name: "Let Claude read it" }).click();
-  await expect(page.locator(".held-note")).toContainText("the email was read as data", { timeout: 15_000 });
+  await expect(page.locator(".held-note")).toContainText("read the email as data", { timeout: 15_000 });
   await expect(held).toHaveCount(0);
   await expect(page.locator(".now-title")).toHaveText("Send the landlord the lease form asap");
   await beat(page, 4500);
