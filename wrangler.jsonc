@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "onething",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "vars": {
+    "TIMEZONE": "America/New_York",
+    "USER_NAME": ""
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "onething",
+      // Paste the id from `npx wrangler d1 create onething` here (docs/deploy.md).
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "src/db"
+    }
+  ],
+  // The free model on your own Cloudflare account. Filing falls back to word rules without it.
+  "ai": { "binding": "AI" },
+  // The job dispatcher runs each due job in its own invocation by calling this same Worker.
+  "services": [{ "binding": "SELF", "service": "onething" }],
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "assets": {
+    "directory": "web/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Every request runs the Worker first, so the app's own files get the security headers too.
+    "run_worker_first": true
+  }
+}
