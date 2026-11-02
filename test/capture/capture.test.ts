@@ -22,7 +22,7 @@ describe("word rules", () => {
 
   it("refuses a model's rewording", () => {
     expect(keepsOwnWords("call the vet", "i need to call the vet today")).toBe(true);
-    expect(keepsOwnWords("Implement a robust veterinary outreach workflow", "call the vet")).toBe(false);
+    expect(keepsOwnWords("Implement a detailed veterinary outreach workflow", "call the vet")).toBe(false);
   });
 
   it("files obvious to-dos and real questions", () => {
@@ -146,7 +146,7 @@ describe("the runner's review", () => {
     const now = ctx.now().toISOString();
     const other = await ctx.db.insert("tasks", { title: "Water the plants", created_at: now, updated_at: now });
     await post(taskId, [
-      { do: "retitle", task_id: todo, title: "Implement a comprehensive veterinary strategy", reason: "x" },
+      { do: "retitle", task_id: todo, title: "Implement a detailed veterinary strategy", reason: "x" },
       { do: "archive", task_id: other, reason: "x" },
       { do: "set_due", task_id: todo, due: "2030-02-31", reason: "x" },
       { do: "set_due", task_id: todo, due: "1999-01-01", reason: "x" },
